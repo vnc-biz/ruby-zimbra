@@ -108,27 +108,27 @@ module Zimbra
         def create(message, account)
           message.add 'name', account.name
           message.add 'password', account.password
-          A.inject(message, 'zimbraCOSId', account.cos_id)
+          Zimbra::A.inject(message, 'zimbraCOSId', account.cos_id)
           account.attributes.each do |k,v|
-            A.inject(message, k, v)
+            Zimbra::A.inject(message, k, v)
           end
         end
 
         def get_by_id(message, id)
-          message.add 'account', id do |c|
+          message.add 'n2:account', id do |c|
             c.set_attr 'by', 'id'
           end
         end
 
         def get_by_name(message, name)
-          message.add 'account', name do |c|
+          message.add 'n2:account', name do |c|
             c.set_attr 'by', 'name'
           end
         end
 
         def modify(message, account)
           message.add 'id', account.id
-          modify_attributes(message, distribution_list)
+          modify_attributes(message, account)
         end
         def modify_attributes(message, account)
           if account.acls.empty?
@@ -138,8 +138,12 @@ module Zimbra
               acl.apply(message)
             end
           end
-          Zimbra::A.inject(node, 'zimbraCOSId', account.cos_id)
-          Zimbra::A.inject(node, 'zimbraIsDelegatedAdminAccount', (delegated_admin ? 'TRUE' : 'FALSE'))
+          Zimbra::A.inject(message, 'zimbraCOSId', account.cos_id)
+          Zimbra::A.inject(message, 'zimbraIsDelegatedAdminAccount', (account.delegated_admin ? 'TRUE' : 'FALSE'))
+          account.attributes.each do |k,v|
+            Zimbra::A.inject(message, k, v)
+          end
+
         end
 
         def delete(message, id)

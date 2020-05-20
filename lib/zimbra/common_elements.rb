@@ -4,7 +4,7 @@ module Zimbra
       def inject(xmldoc, name, value, extra_attributes = {})
         new(name, value, extra_attributes).inject(xmldoc)
       end
-      
+
       def read(xmldoc, name)
         nodes = (xmldoc/"//n2:a[@n='#{name}']")
         return nil if nodes.nil?
@@ -29,7 +29,7 @@ module Zimbra
     end
 
     def inject(xmldoc)
-      xmldoc.add 'a', value do |a|
+      xmldoc.add 'n2:a', value do |a|
         a.set_attr 'n', name
         extra_attributes.each do |eaname, eavalue|
           a.set_attr eaname, eavalue
